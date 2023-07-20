@@ -1,25 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from './pages/Home';
+import React from 'react';
+import Login from './pages/Login';
+import NewContatto from './pages/NewContatto'
+import { Provider } from 'react-redux'; // Aggiunto
+import store from './redux/store'; // Aggiunto
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="Home" element={<Home />} />
+            <Route path="AddContatto" element={<NewContatto />} />
+            {/* <Route path="Imbarca" element={<FormImbarca />} />
+            <Route path="Sbarca" element={<FormSbarca />} /> */}
+          </Routes>
+        </div>
+      </Router>
+    </Provider> // Aggiunto
   );
-}
+};
 
 export default App;
