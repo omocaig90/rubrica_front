@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { Navbar, Nav, Button, Modal } from 'react-bootstrap';
-import { BoxArrowRight, Trash, Eye } from 'react-bootstrap-icons';
+import { Navbar, Nav, Button, Modal, Form } from 'react-bootstrap';
+import { BoxArrowRight, Trash, Eye, PencilSquare } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFalse } from '../redux/slice/authReducer';
@@ -13,6 +13,9 @@ function Home() {
     const [selectedRow, setSelectedRow] = useState(null);
     const navigate = useNavigate();
     const isAuthenticated = useSelector((state) => state.auth);
+
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [updateForm, setUpdateForm] = useState({});
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -31,7 +34,26 @@ function Home() {
             };
             fetchData();
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, showUpdateModal]);
+
+    const handleUpdate = (rowData) => {
+        setUpdateForm(rowData);
+        setShowUpdateModal(true);
+    };
+
+    const handleCloseUpdateModal = async () => {
+        setShowUpdateModal(false);
+    };
+
+    const handleUpdateSubmit = async (event) => {
+        event.preventDefault();
+        try {
+            await axios.put(`http://localhost:5000/rubrica`, updateForm);
+            setShowUpdateModal(false);
+        } catch (error) {
+            console.error("Errore durante l'aggiornamento del record:", error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
@@ -49,6 +71,10 @@ function Home() {
 
     const handleCloseModal = () => {
         setShowModal(false);
+    };
+
+    const handleInputChange = (event) => {
+        setUpdateForm({ ...updateForm, [event.target.name]: event.target.value });
     };
 
     const columns = [
@@ -75,6 +101,16 @@ function Home() {
             width: 100,
             renderCell: (params) => {
                 return <Trash onClick={() => handleDelete(params.row.id)} />;
+            },
+        },
+
+        {
+            field: 'update',
+            headerName: 'Aggiorna',
+            sortable: false,
+            width: 100,
+            renderCell: (params) => {
+                return <PencilSquare onClick={() => handleUpdate(params.row)} />;
             },
         },
     ];
@@ -134,6 +170,54 @@ function Home() {
                     </Button>
                 </Modal.Footer>
             </Modal>
+            {selectedRow && (
+                <Modal show={showUpdateModal} onHide={() => setShowUpdateModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Modifica Contatto</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={handleUpdateSubmit}>
+                            <Form.Group controlId="formNome">
+                                <Form.Label>Nome</Form.Label>
+                                <Form.Control type="text" placeholder="Nome" name="nome" value={updateForm.nome || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Form.Group controlId="formCognome">
+                                <Form.Label>Cognome</Form.Label>
+                                <Form.Control type="text" placeholder="Cognome" name="cognome" value={updateForm.cognome || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Form.Group controlId="formSesso">
+                                <Form.Label>Sesso</Form.Label>
+                                <Form.Control type="text" placeholder="Sesso" name="sesso" value={updateForm.sesso || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Form.Group controlId="formDataDiNascita">
+                                <Form.Label>Data di Nascita</Form.Label>
+                                <Form.Control type="date" name="data_di_nascita" value={updateForm.data_di_nascita || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Form.Group controlId="formNumeroDiTelefono">
+                                <Form.Label>Numero di Telefono</Form.Label>
+                                <Form.Control type="text" placeholder="Numero di Telefono" name="numero_di_telefono" value={updateForm.numero_di_telefono || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Form.Group controlId="formEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control type="email" placeholder="Email" name="email" value={updateForm.email || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Form.Group controlId="formCitta">
+                                <Form.Label>Città</Form.Label>
+                                <Form.Control type="text" placeholder="Città" name="citta" value={updateForm.citta || ''} onChange={handleInputChange} required />
+                            </Form.Group>
+                            <Button variant="primary" type="submit">Aggiorna</Button>
+                        </Form>
+                    </Modal.Body>
+
+
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowUpdateModal(false)}>
+                            Chiudi
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
+
         </div>
     );
 }
