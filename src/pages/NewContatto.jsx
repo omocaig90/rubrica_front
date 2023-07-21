@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 function NewContatto() {
     const [nome, setNome] = useState('');
@@ -16,9 +16,6 @@ function NewContatto() {
 
     const [cittaList, setCittaList] = useState([]);
     const isAuthenticated = useSelector((state) => state.auth);
-
-
-    const dispatch = useDispatch();
 
     const navigate = useNavigate();
 

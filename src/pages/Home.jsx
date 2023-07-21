@@ -17,6 +17,8 @@ function Home() {
 
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateForm, setUpdateForm] = useState({});
+    const [cittaList, setCittaList] = useState([]);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -37,15 +39,28 @@ function Home() {
         }
     }, [isAuthenticated, navigate, showUpdateModal]);
 
+    useEffect(() => {
+        const fetchCitta = async () => {
+            const response = await axios.get('http://localhost:5000/citta');
+            setCittaList(response.data);
+        };
+        fetchCitta();
+    }, []);
+
     const handleUpdate = (rowData) => {
+        setSelectedRow(rowData);
         setUpdateForm(rowData);
         setShowUpdateModal(true);
     };
 
     const handleUpdateSubmit = async (event) => {
         event.preventDefault();
+        let submitForm = { ...updateForm };
+        if (submitForm.data_di_nascita === '') {
+            submitForm.data_di_nascita = null;
+        }
         try {
-            await axios.put(`http://localhost:5000/rubrica`, updateForm);
+            await axios.put(`http://localhost:5000/rubrica`, submitForm);
             setShowUpdateModal(false);
         } catch (error) {
             console.error("Errore durante l'aggiornamento del record:", error);
@@ -125,7 +140,7 @@ function Home() {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                        <Nav.Link as={Link} to="/AddContatto">Aggiungi contatto</Nav.Link>
+                            <Nav.Link as={Link} to="/AddContatto">Aggiungi contatto</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                     <Nav className="ml-auto mt-auto">
@@ -188,11 +203,11 @@ function Home() {
                             </Form.Group>
                             <Form.Group controlId="formDataDiNascita">
                                 <Form.Label>Data di Nascita</Form.Label>
-                                <Form.Control type="date" name="data_di_nascita" value={updateForm.data_di_nascita || ''} onChange={handleInputChange} required />
+                                <Form.Control type="date" name="data_di_nascita" value={updateForm.data_di_nascita || ''} onChange={handleInputChange}  />
                             </Form.Group>
                             <Form.Group controlId="formNumeroDiTelefono">
                                 <Form.Label>Numero di Telefono</Form.Label>
-                                <Form.Control type="text" placeholder="Numero di Telefono" name="numero_di_telefono" value={updateForm.numero_di_telefono || ''} onChange={handleInputChange} required />
+                                <Form.Control type="text" placeholder="Numero di Telefono" name="numero_di_telefono" value={updateForm.numero_di_telefono || ''} onChange={handleInputChange}  />
                             </Form.Group>
                             <Form.Group controlId="formEmail">
                                 <Form.Label>Email</Form.Label>
@@ -200,8 +215,14 @@ function Home() {
                             </Form.Group>
                             <Form.Group controlId="formCitta">
                                 <Form.Label>Città</Form.Label>
-                                <Form.Control type="text" placeholder="Città" name="citta" value={updateForm.citta || ''} onChange={handleInputChange} required />
+                                <Form.Select name="citta" value={updateForm.citta || ''} onChange={handleInputChange} >
+                                    <option value="">-- Seleziona una città --</option>
+                                    {cittaList.map((citta, index) => (
+                                        <option key={index} value={citta}>{citta}</option>
+                                    ))}
+                                </Form.Select>
                             </Form.Group>
+
                             <Button variant="primary" type="submit">Aggiorna</Button>
                         </Form>
                     </Modal.Body>
