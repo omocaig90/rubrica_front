@@ -59,16 +59,13 @@ function NewContatto() {
             } catch (error) {
                 console.error(error);
                 if (error.response) {
-                    // Il server ha risposto con uno stato di errore
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
                     setErrorMessage(error.response.data.message || 'Errore sconosciuto');
                 } else if (error.request) {
-                    // La richiesta è stata fatta ma non c'è stata risposta
                     console.log(error.request);
                 } else {
-                    // Qualcosa è andato storto nella configurazione della richiesta
                     console.log('Error', error.message);
                 }
             }

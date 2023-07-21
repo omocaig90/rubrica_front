@@ -4,8 +4,8 @@ import Home from './pages/Home';
 import React from 'react';
 import Login from './pages/Login';
 import NewContatto from './pages/NewContatto'
-import { Provider } from 'react-redux'; // Aggiunto
-import store from './redux/store'; // Aggiunto
+import { Provider } from 'react-redux'; 
+import store from './redux/store'; 
 
 const App = () => {
   return (
@@ -16,12 +16,10 @@ const App = () => {
             <Route path="/" element={<Login />} />
             <Route path="Home" element={<Home />} />
             <Route path="AddContatto" element={<NewContatto />} />
-            {/* <Route path="Imbarca" element={<FormImbarca />} />
-            <Route path="Sbarca" element={<FormSbarca />} /> */}
           </Routes>
         </div>
       </Router>
-    </Provider> // Aggiunto
+    </Provider> 
   );
 };
 
