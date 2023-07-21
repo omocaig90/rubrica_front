@@ -13,6 +13,7 @@ function NewContatto() {
     const [email, setEmail] = useState('');
     const [citta, setCitta] = useState('');
     const [showAlert, setShowAlert] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [cittaList, setCittaList] = useState([]);
     const isAuthenticated = useSelector((state) => state.auth);
@@ -36,12 +37,12 @@ function NewContatto() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (nome === '' || cognome === '' || sesso === '' || email === '') {
             setShowAlert(true);
         } else {
             setShowAlert(false);
-
+    
             const nuovoContatto = {
                 nome: nome,
                 cognome: cognome,
@@ -51,20 +52,29 @@ function NewContatto() {
                 email: email,
                 citta: citta
             };
-
+    
             try {
                 const response = await axios.post('http://localhost:5000/rubrica', nuovoContatto);
-                if (response.data.success) {
-                    navigate('/home');
-                } else {
-                    // Gestisci qui eventuali errori restituiti dal backend
-                }
+                navigate('/home');
             } catch (error) {
-                // Gestisci qui gli errori di rete o altri errori non gestiti dal backend
                 console.error(error);
+                if (error.response) {
+                    // Il server ha risposto con uno stato di errore
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                    setErrorMessage(error.response.data.message || 'Errore sconosciuto');
+                } else if (error.request) {
+                    // La richiesta è stata fatta ma non c'è stata risposta
+                    console.log(error.request);
+                } else {
+                    // Qualcosa è andato storto nella configurazione della richiesta
+                    console.log('Error', error.message);
+                }
             }
         }
     };
+    
 
     return (
         <Container>
@@ -72,6 +82,7 @@ function NewContatto() {
                 <Col xs={12} sm={8} md={6}>
                     <Form onSubmit={handleSubmit}>
                         {showAlert && <Alert variant="danger">Nome, Cognome, Sesso e Email sono obbligatori</Alert>}
+                        {errorMessage && <Alert variant="danger" onClose={() => setErrorMessage('')} dismissible>{errorMessage}</Alert>}
                         <Form.Group>
                             <Form.Label>Nome</Form.Label>
                             <Form.Control type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />

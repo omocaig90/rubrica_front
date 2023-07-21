@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import { Card, Container, Form, Button } from 'react-bootstrap';
+import { Card, Container, Form, Button, Alert } from 'react-bootstrap';
 import { setTrue } from '../redux/slice/authReducer';
 import { useDispatch } from 'react-redux';
 
 function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -22,13 +23,15 @@ function Login() {
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
-                alert('Username e password errati');
+                setAlertMsg('Username e password errati');
+                setShowAlert(true);
             }
         }
     };
 
     return (
         <Container style={{ maxWidth: '500px', marginTop: '50px' }}>
+            {showAlert && <Alert variant="danger" onClose={() => setShowAlert(false)} dismissible>{alertMsg}</Alert>}
             <Card>
                 <Card.Body>
                     <Form onSubmit={handleLogin}>
