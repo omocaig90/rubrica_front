@@ -6,6 +6,7 @@ import { BoxArrowRight, Trash, Eye, PencilSquare } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFalse } from '../redux/slice/authReducer';
+import { Link } from 'react-router-dom';
 
 function Home() {
     const [rows, setRows] = useState([]);
@@ -39,10 +40,6 @@ function Home() {
     const handleUpdate = (rowData) => {
         setUpdateForm(rowData);
         setShowUpdateModal(true);
-    };
-
-    const handleCloseUpdateModal = async () => {
-        setShowUpdateModal(false);
     };
 
     const handleUpdateSubmit = async (event) => {
@@ -128,7 +125,7 @@ function Home() {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link href="/AddContatto">Aggiungi contatto</Nav.Link>
+                        <Nav.Link as={Link} to="/AddContatto">Aggiungi contatto</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                     <Nav className="ml-auto mt-auto">

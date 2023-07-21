@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import { setTrue } from '../redux/slice/authReducer';
-import { useDispatch } from 'react-redux'; // Aggiungi useSelector
+import { useDispatch, useSelector } from 'react-redux';
 
 function NewContatto() {
     const [nome, setNome] = useState('');
@@ -16,11 +15,18 @@ function NewContatto() {
     const [showAlert, setShowAlert] = useState(false);
 
     const [cittaList, setCittaList] = useState([]);
+    const isAuthenticated = useSelector((state) => state.auth);
 
 
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/');
+        }
+    }, [isAuthenticated, navigate]);
 
     useEffect(() => {
         const fetchCitta = async () => {
@@ -52,7 +58,6 @@ function NewContatto() {
             try {
                 const response = await axios.post('http://localhost:5000/rubrica', nuovoContatto);
                 if (response.data.success) {
-                    dispatch(setTrue());
                     navigate('/home');
                 } else {
                     // Gestisci qui eventuali errori restituiti dal backend
@@ -109,7 +114,6 @@ function NewContatto() {
                         </Form.Group>
                         <Button type="submit">Aggiungi Contatto</Button>
                         <Button variant="danger" onClick={() => {
-                            dispatch(setTrue());
                             navigate('/home');
                         }}>Torna Indietro</Button>
                     </Form>
